@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Register - ApiVigil
+{% endblock %}
+{% block breadcrumb %}
+  Register
+{% endblock %}
+
+{% block content %}
+  <div class="flex justify-center items-center py-10">
+    <div class="card bg-base-100 w-full max-w-xl shadow-2xl border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title text-2xl font-bold mb-2 flex gap-2"><span class="text-primary">🚀</span> Create Account</h2>
+        <p class="text-sm opacity-60 mb-4">Join ApiVigil to start monitoring your endpoints.</p>
+
+        <!-- DJANGO MESSAGES -->
+        {% if messages %}
+          <div class="space-y-2 mb-4">
+            {% for message in messages %}
+              <div role="alert"
+                class="alert {% if message.tags == 'error' %}
+                  alert-error
+                {% else %}
+                  alert-{{ message.tags }}
+                {% endif %} shadow-sm py-2">
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- REGISTRATION FORM -->
+        <form method="post" class="space-y-6">
+          {% csrf_token %}
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for field in form %}
+              <!--  Some fields like 'email' or 'username' look better full width, 
+                             but for a cleaner look we'll stack them or grid them  -->
+              <div class="fieldset {% if field.name == 'username' or field.name == 'email' %}md:col-span-2{% endif %}">
+                <label class="fieldset-legend font-semibold">
+                  {{ field.label }}
+                  {% if field.field.required %}
+                    <span class="text-error">*</span>
+                  {% endif %}
+                </label>
+
+                <div class="w-full">
+                  <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" placeholder="{{ field.label }}" class="input input-bordered w-full focus:input-primary {% if field.errors %}input-error{% endif %}" value="{{ field.value|default_if_none:'' }}" required />
+
+                  <!-- Field Help Text (e.g. Password requirements) -->
+                  {% if field.help_text %}
+                    <div class="text-[10px] opacity-50 mt-1 leading-tight">{{ field.help_text|safe }}</div>
+                  {% endif %}
+
+                  <!-- Field Specific Errors -->
+                  {% if field.errors %}
+                    {% for error in field.errors %}
+                      <div class="text-error text-xs mt-1 font-medium italic">{{ error|striptags }}</div>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="form-control mt-4">
+            <button type="submit" class="btn btn-primary btn-block text-lg">Create Account</button>
+          </div>
+        </form>
+
+        <div class="divider">OR</div>
+
+        <div class="text-center">
+          <p class="text-sm opacity-70">Already have an account?</p>
+          <a href="/user/login/" class="link link-primary font-bold">Sign in here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
