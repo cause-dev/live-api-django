@@ -20,6 +20,16 @@
       main {
         flex: 1;
       }
+      
+      .htmx-indicator {
+        display: none;
+      }
+      .htmx-request .htmx-indicator {
+        display: inline-block;
+      }
+      .htmx-request.htmx-indicator {
+        display: inline-block;
+      }
     </style>
   </head>
   <body class="bg-base-200 text-base-content">
@@ -139,5 +149,12 @@
         <a class="link link-hover">Github</a>
       </nav>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+    <script>
+      // This tells HTMX to include the CSRF token in the headers of every request
+      document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
+      })
+    </script>
   </body>
 </html>

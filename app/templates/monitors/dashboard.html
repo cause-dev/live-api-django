@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Dashboard - ApiVigil
+{% endblock %}
+
+{% block breadcrumb %}
+  <a href="{% url 'dashboard' %}">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+  <div class="space-y-8">
+    <!-- 1. Header & Quick Action -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight">System Overview</h1>
+        <p class="text-base-content/60 text-sm">Real-time status of your monitored endpoints.</p>
+      </div>
+      <button class="btn btn-primary shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>New Monitor
+      </button>
+    </div>
+
+    {% include 'monitors/partials/stats.html' %}
+
+    <!-- 3. Table Section -->
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
+      <div class="p-6 pb-0">
+        <h2 class="text-xl font-bold">Monitors List</h2>
+      </div>
+      <div class="overflow-x-auto p-4">
+        <table class="table w-full">
+          <thead>
+            <tr class="text-base-content/50">
+              <th>Name & URL</th>
+              <th>Expected</th>
+              <th>Current Status</th>
+              <th>Last Checked</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="monitor-table-body">
+            {% include 'monitors/partials/monitor_list.html' %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

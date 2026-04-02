@@ -21,6 +21,11 @@ from monitors import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.monitor_list, name="monitor_list"),
+    path("", views.DashboardView.as_view(), name="dashboard"),
+    path(
+        "monitor/<int:pk>/delete/",
+        views.MonitorDeleteView.as_view(),
+        name="monitor_delete",
+    ),
     path("user/", include("user.urls")),
 ]
