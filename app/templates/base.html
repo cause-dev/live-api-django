@@ -30,6 +30,11 @@
       .htmx-request.htmx-indicator {
         display: inline-block;
       }
+      
+      /* When any parent is processing an HTMX request, hide the refresh icon */
+      .htmx-request .htmx-dis-element {
+        display: none;
+      }
     </style>
   </head>
   <body class="bg-base-200 text-base-content">

@@ -1,24 +1,18 @@
 from django.urls import reverse_lazy
 from django.shortcuts import render
+from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.edit import DeleteView
+from django.views.generic.detail import SingleObjectMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django_htmx.http import trigger_client_event
 from .models import Monitor
 from .forms import AddAPIForm
+from .utils import get_monitor_stats
+from .services import MonitorService
 
 # Create your views here.
-
-
-def get_monitor_stats(user):
-    """Utility to calculate stats for a specific user."""
-    qs = Monitor.objects.filter(user=user)
-    return {
-        "total_count": qs.count(),
-        "online_count": qs.filter(is_online=True, is_active=True).count(),
-        "offline_count": qs.filter(is_online=False, is_active=True).count(),
-    }
 
 
 class DashboardView(LoginRequiredMixin, ListView):
@@ -135,3 +129,24 @@ class MonitorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return render(request, "monitors/partials/stats.html", context)
 
         return super().delete(request, *args, **kwargs)
+
+
+class MonitorAPIView(LoginRequiredMixin, UserPassesTestMixin, SingleObjectMixin, View):
+    model = Monitor
+
+    def test_func(self):
+        return self.get_object().user == self.request.user
+
+    def post(self, request, *args, **kwargs):
+        monitor = self.get_object()
+
+        service = MonitorService(monitor)
+
+        updated_monitor = service.run_check()
+
+        context = get_monitor_stats(request.user)
+        context["monitor"] = updated_monitor
+
+        return render(
+            request, "monitors/partials/update_monitor_response.html", context
+        )
