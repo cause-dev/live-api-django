@@ -22,6 +22,8 @@ from monitors import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.DashboardView.as_view(), name="dashboard"),
+    path("monitor/create/", views.AddAPIView.as_view(), name="add_api"),
+    path("monitor/<int:pk>/edit/", views.UpdateAPIView.as_view(), name="edit_api"),
     path(
         "monitor/<int:pk>/delete/",
         views.MonitorDeleteView.as_view(),

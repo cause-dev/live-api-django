@@ -1,0 +1,29 @@
+<form hx-post="{% url 'edit_api' monitor.id %}" hx-target="#edit_monitor_modal_content" hx-swap="outerHTML">
+  {% csrf_token %}
+  <div class="space-y-4 text-left">
+    <div>
+      <label class="label"><span class="label-text">Monitor Name</span></label>
+      {{ form.name }}
+      <p class="text-error text-xs">{{ form.name.errors.0 }}</p>
+    </div>
+    <div>
+      <label class="label"><span class="label-text">Target URL</span></label>
+      {{ form.url }}
+      <p class="text-error text-xs">{{ form.url.errors.0 }}</p>
+    </div>
+    <div class="flex gap-4">
+      <div class="flex-1">
+        <label class="label"><span class="label-text">Expected Status</span></label>
+        {{ form.expected_status_code }}
+      </div>
+      <div class="flex flex-col items-center">
+        <label class="label"><span class="label-text">Active</span></label>
+        {{ form.is_active }}
+      </div>
+    </div>
+  </div>
+  <div class="modal-action">
+    <button type="submit" class="btn btn-primary">Update Monitor</button>
+    <button type="button" onclick="edit_monitor_modal.close()" class="btn btn-ghost">Cancel</button>
+  </div>
+</form>

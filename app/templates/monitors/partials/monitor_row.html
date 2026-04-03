@@ -5,9 +5,11 @@
       <span class="text-xs opacity-50 font-mono">{{ monitor.url|truncatechars:40 }}</span>
     </div>
   </td>
+
   <td>
     <div class="badge badge-outline badge-sm">{{ monitor.expected_status_code }}</div>
   </td>
+
   <td>
     {% if not monitor.is_active %}
       <div class="badge badge-ghost gap-2">Paused</div>
@@ -21,6 +23,7 @@
       </div>
     {% endif %}
   </td>
+
   <td class="text-sm">
     {% if monitor.last_checked %}
       {{ monitor.last_checked|timesince }} ago
@@ -28,6 +31,7 @@
       <span class="italic opacity-30">Never</span>
     {% endif %}
   </td>
+
   <td class="text-right">
     <div class="dropdown dropdown-left">
       <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-square">
@@ -40,7 +44,8 @@
           <a>View Logs</a>
         </li>
         <li>
-          <a>Edit</a>
+          <!-- TARGETS the content div inside the Edit Modal -->
+          <button type="button" hx-get="{% url 'edit_api' monitor.id %}" hx-target="#edit_monitor_modal_content" onclick="edit_monitor_modal.showModal()">Edit</button>
         </li>
         <li>
           <button type="button" onclick="delete_modal_{{ monitor.id }}.showModal()" class="text-error">Delete</button>
@@ -56,6 +61,7 @@
           Are you sure you want to delete <strong>{{ monitor.name }}</strong>?
         </p>
         <div class="modal-action">
+          <!-- TARGETS the row ID to remove it from the table -->
           <button type="button" hx-delete="{% url 'monitor_delete' monitor.id %}" hx-target="#monitor-row-{{ monitor.id }}" hx-swap="outerHTML" onclick="delete_modal_{{ monitor.id }}.close()" class="btn btn-error">Confirm Delete</button>
           <button type="button" onclick="delete_modal_{{ monitor.id }}.close()" class="btn btn-ghost">Cancel</button>
         </div>

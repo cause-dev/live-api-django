@@ -16,7 +16,7 @@
         <h1 class="text-3xl font-extrabold tracking-tight">System Overview</h1>
         <p class="text-base-content/60 text-sm">Real-time status of your monitored endpoints.</p>
       </div>
-      <button class="btn btn-primary shadow-lg">
+      <button class="btn btn-primary shadow-lg" hx-get="{% url 'add_api' %}" hx-target="#add_monitor_modal_content" onclick="add_monitor_modal.showModal()">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>New Monitor
@@ -48,4 +48,34 @@
       </div>
     </div>
   </div>
+
+  <!-- THE MODAL STRUCTURE -->
+  <dialog id="add_monitor_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg mb-4">Add New API Monitor</h3>
+      <div id="add_monitor_modal_content">
+        <!-- The form will load here via hx-get -->
+        <div class="flex justify-center p-10">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <dialog id="edit_monitor_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg mb-4">Edit API Monitor</h3>
+      <div id="edit_monitor_modal_content">
+        <div class="flex justify-center p-10">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 {% endblock %}

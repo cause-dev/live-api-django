@@ -155,6 +155,9 @@
       document.body.addEventListener('htmx:configRequest', (event) => {
         event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
       })
+      
+      document.body.addEventListener('monitorAdded', () => add_monitor_modal.close())
+      document.body.addEventListener('monitorUpdated', () => edit_monitor_modal.close())
     </script>
   </body>
 </html>

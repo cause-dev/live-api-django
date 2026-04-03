@@ -1,0 +1,12 @@
+<!-- 1. The NEW row (Teleported to the top of the table) -->
+<template hx-swap-oob="afterbegin:#monitor-table-body">
+  {% include 'monitors/partials/monitor_row.html' %}
+</template>
+
+<!-- 2. The updated stats (Updates automatically) -->
+{% include 'monitors/partials/stats.html' %}
+
+<!-- 3. Reset the modal form -->
+<div id="add_monitor_modal_content" hx-swap-oob="true">
+  <p class="text-success text-center py-4">Monitor Created!</p>
+</div>
