@@ -43,7 +43,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - "./app:/app:Z"
+      - "./app:/app:z"
       - vscode:/root/.vscode-server:Z
     command: "uv run python manage.py runserver 0.0.0.0:8000"
     depends_on:
@@ -64,7 +64,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/apivigil
       - CELERY_BROKER_URL=redis://redis:6379/0
     volumes:
-      - "./app:/app:Z"
+      - "./app:/app:z"
     command: "uv run celery -A config worker --loglevel=info"
     depends_on:
       db:
