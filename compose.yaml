@@ -17,6 +17,19 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+
+  redis:
+    container_name: "redis"
+    image: "redis:8-alpine"
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
   backend:
     container_name: "backend"
     build:
@@ -26,6 +39,7 @@ services:
         - PYTHON_VERSION=python3.14-trixie
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/apivigil
+      - CELERY_BROKER_URL=redis://redis:6379/0
     ports:
       - "8000:8000"
     volumes:
@@ -34,6 +48,28 @@ services:
     command: "uv run python manage.py runserver 0.0.0.0:8000"
     depends_on:
       db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    container_name: "worker"
+    build:
+      context: "./app"
+      dockerfile: "Containerfile.dev"
+      args:
+        - PYTHON_VERSION=python3.14-trixie
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/apivigil
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    volumes:
+      - "./app:/app:Z"
+    command: "uv run celery -A config worker --loglevel=info"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: unless-stopped
 
