@@ -38,7 +38,14 @@ services:
       args:
         - PYTHON_VERSION=python3.14-trixie
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/apivigil
+      # Database configuration for Django
+      - DATABASE_ENGINE=django.db.backends.postgresql
+      - DATABASE_NAME=apivigil
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      # Celery configuration
       - CELERY_BROKER_URL=redis://redis:6379/0
     ports:
       - "8000:8000"
@@ -61,7 +68,14 @@ services:
       args:
         - PYTHON_VERSION=python3.14-trixie
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/apivigil
+      # Database configuration for Django
+      - DATABASE_ENGINE=django.db.backends.postgresql
+      - DATABASE_NAME=apivigil
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      # Celery configuration
       - CELERY_BROKER_URL=redis://redis:6379/0
     volumes:
       - "./app:/app:z"
