@@ -138,3 +138,10 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+
+CELERY_BEAT_SCHEDULE = {
+    "check-all-apis-every-5-minute": {
+        "task": "monitors.tasks.check_all_apis_task",
+        "schedule": 300.0,  # every 5 minutes
+    }
+}
