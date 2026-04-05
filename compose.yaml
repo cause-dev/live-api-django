@@ -87,6 +87,33 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  beat:
+    container_name: "beat"
+    build:
+      context: "./app"
+      dockerfile: "Containerfile.dev"
+      args:
+        - PYTHON_VERSION=python3.14-trixie
+    environment:
+      # Database configuration for Django
+      - DATABASE_ENGINE=django.db.backends.postgresql
+      - DATABASE_NAME=apivigil
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      # Celery configuration
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    volumes:
+      - "./app:/app:z"
+    command: "uv run celery -A config beat --loglevel=info"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   data: {}
   vscode: {}
