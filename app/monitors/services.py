@@ -1,6 +1,6 @@
 import requests
 from django.utils import timezone
-from requests.exceptions import Timeout, ConnectionError, HTTPError, RequestException
+from .models import MonitorLog
 
 
 class MonitorService:
@@ -20,7 +20,7 @@ class MonitorService:
 
     def run_check(self):
         """
-        The main entry point. Pings the site and updates the results.
+        The main entry point. Pings the site, creates a log, and updates the model.
         """
         try:
             response = self._perform_request("HEAD")
@@ -30,12 +30,12 @@ class MonitorService:
             self.status_code = response.status_code
             self.response_time = response.elapsed.total_seconds()
             self.is_online = self.status_code == self.expected_code
-        except Timeout:
-            self.error_message = "Timeout"
-        except ConnectionError:
-            self.error_message = "DNS/Connection Error"
-        except RequestException:
-            self.error_message = "Request Failed"
+
+        except Exception as e:
+            self.is_online = False
+            self.error_message = str(e)[:1000]
+
+        self._create_log_entry()
 
         return self._update_monitor_model()
 
@@ -58,3 +58,13 @@ class MonitorService:
         self.monitor.last_checked = timezone.now()
         self.monitor.save()
         return self.monitor
+
+    def _create_log_entry(self):
+        """Saves a snapshot of this check to the MonitorLog table."""
+        MonitorLog.objects.create(
+            monitor=self.monitor,
+            status_code=self.status_code,
+            latency=self.response_time,
+            is_online=self.is_online,
+            error_message=self.error_message,
+        )
