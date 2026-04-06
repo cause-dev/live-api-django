@@ -17,3 +17,20 @@ class Monitor(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.url})"
+
+
+class MonitorLog(models.Model):
+    monitor = models.ForeignKey(
+        to=Monitor, on_delete=models.CASCADE, related_name="logs"
+    )
+    status_code = models.PositiveBigIntegerField(null=True, blank=True)
+    latency = models.FloatField(null=True, blank=True)
+    is_online = models.BooleanField()
+    error_message = models.TextField(max_length=1000, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        return f"{self.monitor.name} - {self.status_code} at {self.timestamp}"
