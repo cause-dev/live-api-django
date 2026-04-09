@@ -1,53 +1,20 @@
-from django.urls import reverse_lazy
-from django.shortcuts import render
-from django.views import View
-from django.db.models import Avg
-from django.utils import timezone
 from datetime import timedelta
-from django.views.generic import TemplateView
-from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.edit import DeleteView
-from django.views.generic.detail import SingleObjectMixin, DetailView
+
+from django.shortcuts import render
+from django.utils import timezone
+from django.urls import reverse_lazy
+from django.db.models import Avg
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views import View
+from django.views.generic.detail import DetailView, SingleObjectMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 from django_htmx.http import trigger_client_event
-from .models import Monitor, MonitorLog
-from .forms import AddAPIForm
-from .utils import get_monitor_stats
-from .tasks import check_api_task
 
-# Create your views here.
-
-
-class DashboardView(LoginRequiredMixin, ListView):
-    model = Monitor
-    template_name = "monitors/dashboard.html"
-    context_object_name = "monitors"
-
-    def get_queryset(self):
-        # Always filter by current user and newest first
-        return Monitor.objects.filter(user=self.request.user).order_by("-created_at")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Merges our stats helper into the template context
-        context.update(get_monitor_stats(self.request.user))
-        context["base_template"] = (
-            "partials/content_base.html" if self.request.htmx else "base.html"
-        )
-        return context
-
-
-class DashboardPollView(LoginRequiredMixin, TemplateView):
-    template_name = "monitors/partials/dashboard_poll.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["monitors"] = Monitor.objects.filter(user=self.request.user).order_by(
-            "-created_at"
-        )
-        context.update(get_monitor_stats(self.request.user))
-        return context
+from monitors.utils import get_monitor_stats
+from monitors.tasks import check_api_task
+from monitors.models import Monitor
+from monitors.forms import AddAPIForm
 
 
 class APIDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -231,41 +198,3 @@ class MonitorRowView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context.update(get_monitor_stats(self.request.user))
         return context
-
-
-class LogsView(LoginRequiredMixin, ListView):
-    model = MonitorLog
-    template_name = "monitors/logs.html"
-    context_object_name = "logs"
-    paginate_by = 25
-
-    def get_queryset(self):
-        qs = (
-            MonitorLog.objects.filter(monitor__user=self.request.user)
-            .select_related("monitor")
-            .order_by("-timestamp")
-        )
-
-        monitor_id = self.request.GET.get("monitor_id")
-        if monitor_id:
-            qs = qs.filter(monitor_id=monitor_id)
-
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["user_monitors"] = Monitor.objects.filter(user=self.request.user)
-        context["base_template"] = (
-            "partials/content_base.html" if self.request.htmx else "base.html"
-        )
-        return context
-
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.htmx:
-            if self.request.GET.get("monitor_id"):
-                # If a specific monitor is selected, we only update the table body
-                return render(
-                    self.request, "monitors/partials/log_table_body.html", context
-                )
-
-        return super().render_to_response(context, **response_kwargs)
