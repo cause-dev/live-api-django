@@ -20,7 +20,7 @@ class RegisterView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["base_template"] = (
-            T.LAYOUT.HTMX_BASE if self.request.htmx else T.LAYOUT.BASE
+            T["LAYOUT"]["HTMX_BASE"] if self.request.htmx else T["LAYOUT"]["BASE"]
         )
         return context
 
@@ -45,7 +45,7 @@ class LoginView(DjangoLoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["base_template"] = (
-            T.LAYOUT.HTMX_BASE if self.request.htmx else T.LAYOUT.BASE
+            T["LAYOUT"]["HTMX_BASE"] if self.request.htmx else T["LAYOUT"]["BASE"]
         )
         return context
 

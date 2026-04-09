@@ -1,8 +1,9 @@
 from datetime import timedelta
 
 from django.shortcuts import render
-from django.utils import timezone
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import View
 from django.views.generic.detail import DetailView, SingleObjectMixin
@@ -74,19 +75,23 @@ class AddEndpointView(LoginRequiredMixin, CreateView):
 
         # 3. HTMX Response
         if self.request.htmx:
+            messages.success(
+                self.request, f"Endpoint '{self.object.name}' added successfully."
+            )
+
             # Get fresh stats after the save
             context = get_endpoint_stats(self.request.user)
-            # Add the new endpoint object to context for the row partial
-            context["item"] = self.object
+
+            endpoints = Endpoint.objects.filter(user=self.request.user).order_by(
+                "-created_at"
+            )
+            context["endpoints"] = endpoints
 
             response = render(
-                self.request, "monitors/partials/save_monitor_response.html", context
+                self.request, T["MONITORS"]["PARTIALS"]["HTMX_RESPONSE"], context
             )
-            return trigger_client_event(
-                response,
-                "monitorAdded",
-                {"message": f"Monitor '{self.object.name}' added."},
-            )
+
+            return trigger_client_event(response, "endpointAdded", {})
 
         return super().form_valid(form)
 
@@ -151,6 +156,8 @@ class DeleteEndpointView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         # 2. HTMX Response
         if request.htmx:
+            messages.error(self.request, f"Endpoint '{self.object.name}' deleted.")
+
             endpoints = Endpoint.objects.filter(user=self.request.user).order_by(
                 "-created_at"
             )

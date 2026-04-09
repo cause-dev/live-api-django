@@ -1,3 +1,38 @@
+<!-- 1. Messages Area (Toasts/Alerts) -->
+<div id="dashboard-messages" class="w-full">
+  {% if messages %}
+    <div class="space-y-3 mb-6">
+      {% for message in messages %}
+        <div class="alert shadow-lg border-l-4 
+            {% if message.tags == 'success' %}
+            alert-success border-success
+          {% elif message.tags == 'error' %}
+            alert-error border-error
+          {% else %}
+            alert-info border-info
+          {% endif %}"
+          onclick="this.remove()">
+          <!-- Click to dismiss -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div class="flex-1">
+            <span class="font-bold text-sm">{{ message }}</span>
+          </div>
+          <button class="btn btn-ghost btn-xs btn-circle">✕</button>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Optional: Auto-hide messages after 4 seconds -->
+    <script>
+      setTimeout(() => {
+        document.getElementById('dashboard-messages').innerHTML = ''
+      }, 4000)
+    </script>
+  {% endif %}
+</div>
+
 {% include T.MONITORS.PARTIALS.STATS %}
 
 <!-- 2. The Table Section -->
