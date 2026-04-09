@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-  {% include 'partials/breadcrumb.html' with page_breadcrumb='Login' %}
+  {% include T.LAYOUT.PARTIALS.BREADCRUMB with page_breadcrumb='Login' %}
   <div class="flex justify-center items-center py-10">
     <div class="card bg-base-100 w-full max-w-md shadow-2xl border border-base-300">
       <div class="card-body">
@@ -18,9 +18,12 @@
               <div role="alert"
                 class="alert {% if message.tags == 'error' %}
                   
+                  
                   alert-error
 
+
                 {% else %}
+                  
                   
                   alert-{{ message.tags }}
                 {% endif %} shadow-sm py-2">

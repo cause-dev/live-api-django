@@ -2,14 +2,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView
 
+from config.template_registry import T
 from monitors.utils import get_endpoint_stats
 from monitors.models import Endpoint
 
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = Endpoint
-    template_name = "monitors/dashboard.html"
-    context_object_name = "endpoints"
+    template_name = T["MONITORS"]["DASHBOARD"]
 
     def get_queryset(self):
         # Always filter by current user and newest first
@@ -20,13 +20,13 @@ class DashboardView(LoginRequiredMixin, ListView):
         # Merges our stats helper into the template context
         context.update(get_endpoint_stats(self.request.user))
         context["base_template"] = (
-            "partials/content_base.html" if self.request.htmx else "base.html"
+            T["LAYOUT"]["HTMX_BASE"] if self.request.htmx else T["LAYOUT"]["BASE"]
         )
         return context
 
 
 class DashboardPollView(LoginRequiredMixin, TemplateView):
-    template_name = "monitors/partials/dashboard_poll.html"
+    template_name = T["MONITORS"]["PARTIALS"]["HTMX_RESPONSE"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -34,4 +34,5 @@ class DashboardPollView(LoginRequiredMixin, TemplateView):
             "-created_at"
         )
         context.update(get_endpoint_stats(self.request.user))
+
         return context

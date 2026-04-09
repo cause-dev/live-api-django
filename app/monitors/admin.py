@@ -16,7 +16,7 @@ class EndpointAdmin(admin.ModelAdmin):
 class EndpointLogAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "monitor",
+        "endpoint",
         "latency",
         "status_code",
         "is_online",
@@ -24,5 +24,5 @@ class EndpointLogAdmin(admin.ModelAdmin):
         "error_message",
     )
     list_filter = ("status_code", "timestamp")
-    search_fields = ("monitor",)
+    search_fields = ("endpoint",)
     ordering = ("-timestamp",)

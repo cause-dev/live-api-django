@@ -1,22 +1,22 @@
 {% extends base_template %}
 
 {% block title %}
-  {{ monitor.name }} - ApiVigil
+  {{ object.name }} - ApiVigil
 {% endblock %}
 
 {% block content %}
-  {% include 'partials/breadcrumb.html' with page_breadcrumb=monitor.name %}
+  {% include T.MONITORS.PARTIALS.BREADCRUMBS with page_breadcrumb=object.name %}
 
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex justify-between items-end">
       <div>
-        <h1 class="text-3xl font-extrabold">{{ monitor.name }}</h1>
-        <p class="font-mono text-sm opacity-50">{{ monitor.url }}</p>
+        <h1 class="text-3xl font-extrabold">{{ object.name }}</h1>
+        <p class="font-mono text-sm opacity-50">{{ object.url }}</p>
       </div>
       <div class="flex gap-2">
         <!-- We use hx-target="body" for the check to refresh everything, or target #main-content -->
-        <button hx-post="{% url 'monitor_check' monitor.id %}" hx-target="#main-content" class="btn btn-primary btn-sm">Check Now</button>
+        <button hx-post="{% url 'object_check' object.id %}" hx-target="#main-content" class="btn btn-primary btn-sm">Check Now</button>
         <a href="{% url 'dashboard' %}" class="btn btn-ghost btn-sm" hx-get="{% url 'dashboard' %}" hx-target="#main-content" hx-push-url="true">Back to Dashboard</a>
       </div>
     </div>
@@ -26,18 +26,22 @@
       <div class="stat">
         <div class="stat-title">Current Status</div>
         <!-- CLEANED: No massive whitespace blocks here -->
-        <div class="stat-value {% if monitor.is_online %}
+        <div class="stat-value {% if object.is_online %}
+            
             text-success
+
           {% else %}
+            
             text-error
-          {% endif %}">{{ monitor.is_online|yesno:'Online,Down' }}</div>
-        <div class="stat-desc">Last checked {{ monitor.last_checked|timesince }} ago</div>
+
+          {% endif %}">{{ object.is_online|yesno:'Online,Down' }}</div>
+        <div class="stat-desc">Last checked {{ object.last_checked|timesince }} ago</div>
       </div>
 
       <div class="stat">
         <div class="stat-title">Uptime (All time)</div>
         <div class="stat-value text-primary">{{ uptime_percentage }}%</div>
-        <div class="stat-desc">Based on {{ monitor.logs.count }} checks</div>
+        <div class="stat-desc">Based on {{ object.logs.count }} checks</div>
       </div>
 
       <div class="stat">
@@ -72,7 +76,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for log in monitor.logs.all|slice:':10' %}
+            {% for log in object.logs.all|slice:':10' %}
               <tr>
                 <td>
                   {% if log.is_online %}

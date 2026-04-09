@@ -1,23 +1,27 @@
 from django.urls import path
 
-from monitors.views import dashboard, api_crud, logs
+from monitors import views
 
 urlpatterns = [
-    path("", dashboard.DashboardView.as_view(), name="dashboard"),
+    path("", views.DashboardView.as_view(), name="dashboard"),
+    path("dashboard/poll/", views.DashboardPollView.as_view(), name="dashboard_poll"),
+    path("endpoint/<int:pk>/", views.EndpointView.as_view(), name="endpoint"),
+    path("endpoint/create/", views.AddEndpointView.as_view(), name="add_endpoint"),
     path(
-        "dashboard/poll/", dashboard.DashboardPollView.as_view(), name="dashboard_poll"
+        "endpoint/<int:pk>/edit/",
+        views.UpdateEndpointView.as_view(),
+        name="edit_endpoint",
     ),
-    path("api/<int:pk>/", api_crud.APIDetailsView.as_view(), name="api_detail"),
-    path("api/create/", api_crud.AddAPIView.as_view(), name="add_api"),
-    path("api/<int:pk>/edit/", api_crud.UpdateAPIView.as_view(), name="edit_api"),
     path(
-        "api/<int:pk>/check/", api_crud.MonitorAPIView.as_view(), name="monitor_check"
+        "endpoint/<int:pk>/check/",
+        views.MonitorAPIView.as_view(),
+        name="check_endpoint",
     ),
-    path("api/<int:pk>/row/", api_crud.MonitorRowView.as_view(), name="monitor_row"),
+    path("endpoint/<int:pk>/row/", views.MonitorRowView.as_view(), name="endpoint_row"),
     path(
-        "api/<int:pk>/delete/",
-        api_crud.MonitorDeleteView.as_view(),
-        name="monitor_delete",
+        "endpoint/<int:pk>/delete/",
+        views.DeleteEndpointView.as_view(),
+        name="delete_endpoint",
     ),
-    path("logs/", logs.LogsView.as_view(), name="monitor_logs"),
+    path("logs/", views.LogsView.as_view(), name="endpoint_logs"),
 ]

@@ -2,7 +2,7 @@ from django import forms
 from .models import Endpoint
 
 
-class AddAPIForm(forms.ModelForm):
+class EndpointForm(forms.ModelForm):
     class Meta:
         model = Endpoint
         fields = ["name", "url", "expected_status_code", "is_active"]

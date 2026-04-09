@@ -5,6 +5,8 @@ from django.contrib.auth.views import (
     LogoutView as DjangoLogoutView,
 )
 from django.views.generic import CreateView
+
+from config.template_registry import T
 from .forms import SignUpForm, LoginForm
 
 # Create your views here.
@@ -18,7 +20,7 @@ class RegisterView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["base_template"] = (
-            "partials/content_base.html" if self.request.htmx else "base.html"
+            T.LAYOUT.HTMX_BASE if self.request.htmx else T.LAYOUT.BASE
         )
         return context
 
@@ -43,7 +45,7 @@ class LoginView(DjangoLoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["base_template"] = (
-            "partials/content_base.html" if self.request.htmx else "base.html"
+            T.LAYOUT.HTMX_BASE if self.request.htmx else T.LAYOUT.BASE
         )
         return context
 

@@ -5,37 +5,46 @@
 {% endblock %}
 
 {% block content %}
-  {% include 'partials/breadcrumb.html' %}
-  <div class="space-y-8" id="poll-container" hx-get="{% url 'dashboard_poll' %}" hx-trigger="every 10s" hx-target="#poll-container">
-    {% include 'monitors/partials/dashboard_header.html' %}
+  <!-- 1. Breadcrumbs (Static) -->
+  {% include T.LAYOUT.PARTIALS.BREADCRUMBS %}
 
-    {% include 'monitors/partials/stats.html' %}
+  <div class="space-y-8">
+    <!-- 2. Header Section (Static - Outside the poll) -->
+    <!-- This ensures the "New Monitor" button doesn't reload during pings -->
+    {% include T.MONITORS.PARTIALS.HEADER %}
 
-    <!-- 3. Table Section -->
-    <div class="card bg-base-100 border border-base-300 shadow-sm">
-      <div class="p-6 pb-0">
-        <h2 class="text-xl font-bold">Monitors List</h2>
+    <!-- 3. Dynamic Content Area (Stats & Table) -->
+    <div id="poll-container" class="space-y-8" hx-get="{% url 'dashboard_poll' %}" hx-trigger="every 10s" hx-target="this" hx-swap="innerHTML">
+      <!-- Stats Row -->
+      {% include T.MONITORS.PARTIALS.STATS %}
+
+      <!-- Table Section -->
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="p-6 pb-0">
+          <h2 class="text-xl font-bold">Endpoints Overview</h2>
+        </div>
+        <div class="overflow-x-auto p-4">
+          <table class="table w-full">
+            <thead>
+              <tr class="text-base-content/50">
+                <th>Name & URL</th>
+                <th>Expected</th>
+                <th>Current Status</th>
+                <th>Last Checked</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <!-- Ensure this ID matches your OOB swap target from previous steps -->
+            <tbody id="endpoint-table-body">
+              {% include T.MONITORS.PARTIALS.ENDPOINTS.LIST %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="overflow-x-auto p-4">
-        <table class="table w-full">
-          <thead>
-            <tr class="text-base-content/50">
-              <th>Name & URL</th>
-              <th>Expected</th>
-              <th>Current Status</th>
-              <th>Last Checked</th>
-              <th class="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="monitor-table-body">
-            {% include 'monitors/partials/monitor_list.html' %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </div> <!-- End poll-container -->
   </div>
 
-  <!-- THE MODAL STRUCTURE -->
+  <!-- THE MODAL STRUCTURE (Static - Outside the poll) -->
   {% include 'monitors/partials/dashboard_add_api_modal.html' %}
   {% include 'monitors/partials/dashboard_edit_api_modal.html' %}
 {% endblock %}

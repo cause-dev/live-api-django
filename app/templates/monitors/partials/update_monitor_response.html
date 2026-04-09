@@ -4,7 +4,7 @@
 <!-- 2. Teleport the updated row to the table -->
 <!-- We use hx-swap-oob="outerHTML:#ID" to be extremely specific -->
 <template hx-swap-oob="outerHTML:#monitor-row-{{ monitor.id }}">
-  {% include 'monitors/partials/monitor_row.html' %}
+  {% include T.MONITORS.PARTIALS.ENDPOINTS.ROW %}
 </template>
 
 <!-- 3. Clear the modal content (this is the primary target) -->

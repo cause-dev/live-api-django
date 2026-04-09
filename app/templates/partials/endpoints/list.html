@@ -1,5 +1,5 @@
-{% for monitor in monitors %}
-  {% include 'monitors/partials/monitor_row.html' %}
+{% for item in object_list %}
+  {% include T.MONITORS.PARTIALS.ENDPOINTS.ROW %}
 {% empty %}
   <tr>
     <td colspan="5" class="py-20 text-center">

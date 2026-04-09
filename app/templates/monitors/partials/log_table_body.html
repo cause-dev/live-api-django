@@ -1,6 +1,6 @@
-{% for log in logs %}
+{% for log in object_list %}
   <tr class="hover:bg-base-200/50 transition-colors">
-    <td class="font-bold">{{ log.monitor.name }}</td>
+    <td class="font-bold">{{ log.endpoint.name }}</td>
 
     <td>
       <div class="flex items-center gap-2">

@@ -2,13 +2,13 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
 
+from config.template_registry import T
 from monitors.models import Endpoint, EndpointLog
 
 
 class LogsView(LoginRequiredMixin, ListView):
     model = EndpointLog
-    template_name = "monitors/logs.html"
-    context_object_name = "logs"
+    template_name = T["MONITORS"]["LOGS"]
     paginate_by = 25
 
     def get_queryset(self):
@@ -28,7 +28,7 @@ class LogsView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["user_endpoints"] = Endpoint.objects.filter(user=self.request.user)
         context["base_template"] = (
-            "partials/content_base.html" if self.request.htmx else "base.html"
+            T["LAYOUT"]["HTMX_BASE"] if self.request.htmx else T["LAYOUT"]["BASE"]
         )
         return context
 

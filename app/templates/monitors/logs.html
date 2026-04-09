@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-  {% include 'partials/breadcrumb.html' with page_breadcrumb='Logs' %}
+  {% include T.LAYOUT.PARTIALS.BREADCRUMBS with page_breadcrumb='Logs' %}
   <div class="space-y-6">
     {% include 'monitors/partials/logs_header.html' %}
     {% include 'monitors/partials/logs_table.html' %}

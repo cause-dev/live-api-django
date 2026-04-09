@@ -1,7 +1,7 @@
 <div class="space-y-8" id="poll-container" hx-get="{% url 'dashboard_poll' %}" hx-trigger="every 10s" hx-target="#poll-container" hx-swap="outerHTML">
-  {% include 'monitors/partials/dashboard_header.html' %}
+  {% include T.MONITORS.PARTIALS.HEADER %}
 
-  {% include 'monitors/partials/stats.html' %}
+  {% include T.MONITORS.PARTIALS.STATS %}
 
   <!-- 3. Table Section -->
   <div class="card bg-base-100 border border-base-300 shadow-sm">
@@ -20,7 +20,7 @@
           </tr>
         </thead>
         <tbody id="monitor-table-body">
-          {% include 'monitors/partials/monitor_list.html' %}
+          {% include T.MONITORS.PARTIALS.ENDPOINTS.LIST %}
         </tbody>
       </table>
     </div>

@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.shortcuts import render
 from django.utils import timezone
 from django.urls import reverse_lazy
-from django.db.models import Avg
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import View
 from django.views.generic.detail import DetailView, SingleObjectMixin
@@ -11,16 +10,18 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from django_htmx.http import trigger_client_event
 
+from config.template_registry import T
+
 from monitors.utils import get_endpoint_stats
 from monitors.tasks import check_api_task
 from monitors.models import Endpoint
-from monitors.forms import AddAPIForm
+from monitors.forms import EndpointForm
 
 
-class APIDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+# --- 1. DETAIL VIEW ---
+class EndpointView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Endpoint
-    template_name = "monitors/api_details.html"
-    context_object_name = "endpoint"
+    template_name = T["MONITORS"]["DETAILS"]
 
     def test_func(self):
         """Security: Ensure only the owner can view this endpoint."""
@@ -32,11 +33,11 @@ class APIDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        endpoint = self.object
+        obj = self.object
 
         # 1. Get logs from the last 24 hours for the chart
         last_24h = timezone.now() - timedelta(hours=24)
-        chart_logs = endpoint.logs.filter(timestamp__gte=last_24h).order_by("timestamp")
+        chart_logs = obj.logs.filter(timestamp__gte=last_24h).order_by("timestamp")
 
         # 2. Format data for Chart.js
         # We use .strftime to make the timestamps readable in JS
@@ -47,29 +48,20 @@ class APIDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             log.latency if log.latency else 0 for log in chart_logs
         ]
 
-        # 3. Calculate Uptime %
-        total_logs = endpoint.logs.count()
-        if total_logs > 0:
-            online_logs = endpoint.logs.filter(is_online=True).count()
-            context["uptime_percentage"] = round((online_logs / total_logs) * 100, 1)
-        else:
-            context["uptime_percentage"] = 0
-
-        # 4. Average Latency
-        avg = endpoint.logs.aggregate(Avg("latency"))["latency__avg"]
-        context["avg_latency"] = round(avg, 3) if avg else 0
+        context["uptime_percentage"] = obj.uptime_percentage
+        context["avg_latency"] = obj.avg_latency
 
         context["base_template"] = (
-            "partials/content_base.html" if self.request.htmx else "base.html"
+            T["LAYOUT"]["HTMX_BASE"] if self.request.htmx else T["LAYOUT"]["BASE"]
         )
 
         return context
 
 
-class AddAPIView(LoginRequiredMixin, CreateView):
+class AddEndpointView(LoginRequiredMixin, CreateView):
     model = Endpoint
-    form_class = AddAPIForm
-    template_name = "monitors/partials/add_api_form.html"
+    form_class = EndpointForm
+    template_name = T["MONITORS"]["PARTIALS"]["ADD_FORM"]
     success_url = reverse_lazy("dashboard")
 
     def form_valid(self, form):
@@ -85,7 +77,7 @@ class AddAPIView(LoginRequiredMixin, CreateView):
             # Get fresh stats after the save
             context = get_endpoint_stats(self.request.user)
             # Add the new endpoint object to context for the row partial
-            context["endpoint"] = self.object
+            context["item"] = self.object
 
             response = render(
                 self.request, "monitors/partials/save_monitor_response.html", context
@@ -105,10 +97,10 @@ class AddAPIView(LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
 
-class UpdateAPIView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class UpdateEndpointView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Endpoint
-    form_class = AddAPIForm
-    template_name = "monitors/partials/edit_api_form.html"
+    form_class = EndpointForm
+    template_name = "monitors/partials/edit_endpoint_form.html"
     success_url = reverse_lazy("dashboard")
 
     def test_func(self):
@@ -144,7 +136,7 @@ class UpdateAPIView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class MonitorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class DeleteEndpointView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Endpoint
     success_url = reverse_lazy("dashboard")
 
@@ -159,9 +151,14 @@ class MonitorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         # 2. HTMX Response
         if request.htmx:
+            endpoints = Endpoint.objects.filter(user=self.request.user).order_by(
+                "-created_at"
+            )
             context = get_endpoint_stats(request.user)
+            context["endpoints"] = endpoints
+            print(context)
 
-            return render(request, "monitors/partials/stats.html", context)
+            return render(request, T["MONITORS"]["PARTIALS"]["HTMX_RESPONSE"], context)
 
         return super().delete(request, *args, **kwargs)
 

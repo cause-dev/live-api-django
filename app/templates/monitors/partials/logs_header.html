@@ -2,13 +2,13 @@
     <h1 class="text-3xl font-bold">Event Logs</h1>
 
     <!-- Monitor Filter Dropdown -->
-    <select name="monitor_id" 
+    <select name="endpoint_id" 
     class="select select-bordered w-full max-w-xs"
-    hx-get="{% url 'monitor_logs' %}"
+    hx-get="{% url 'endpoint_logs' %}"
     hx-target="#log-table-body" hx-push-url="true">
-        <option value="">All Monitors</option>
-        {% for m in user_monitors %}
-            <option value="{{ m.id }}" {% if m.id|stringformat:"s" == request.GET.monitor_id %}selected{% endif %}>
+        <option value="">All Endpoints</option>
+        {% for m in user_endpoints %}
+            <option value="{{ m.id }}" {% if m.id|stringformat:"s" == request.GET.endpoint_id %}selected{% endif %}>
                 {{ m.name }}
             </option>
         {% endfor %}

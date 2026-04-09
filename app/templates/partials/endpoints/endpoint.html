@@ -1,22 +1,22 @@
-<tr id="monitor-row-{{ monitor.id }}" 
+<tr id="endpoint-row-{{ item.id }}" 
     class="hover:bg-base-200/50 transition-colors"
     {% if is_checking %}
-      hx-get="{% url 'monitor_row' monitor.id %}"
+      hx-get="{% url 'endpoint' item.id %}"
       hx-trigger="load delay:3s"
     {% endif %}>
     
   <td>
   <div class="flex flex-col">
     <!-- Link the name to the detail view -->
-    <a href="{% url 'api_detail' monitor.id %}" hx-get="{% url 'api_detail' monitor.id %}" hx-target="#main-content" hx-push-url="true" class="font-bold text-base hover:text-primary transition-colors cursor-pointer">
-        {{ monitor.name }}
+    <a href="{% url 'endpoint' item.id %}" hx-get="{% url 'endpoint' item.id %}" hx-target="#main-content" hx-push-url="true" class="font-bold text-base hover:text-primary transition-colors cursor-pointer">
+        {{ item.name }}
     </a>
-    <span class="text-xs opacity-50 font-mono">{{ monitor.url|truncatechars:40 }}</span>
+    <span class="text-xs opacity-50 font-mono">{{ item.url|truncatechars:40 }}</span>
   </div>
 </td>
 
   <td>
-    <div class="badge badge-outline badge-sm">{{ monitor.expected_status_code }}</div>
+    <div class="badge badge-outline badge-sm">{{ item.expected_status_code }}</div>
   </td>
 
   <td>
@@ -25,9 +25,9 @@
         <span class="loading loading-spinner loading-xs"></span>
         Checking...
       </div>
-    {% elif not monitor.is_active %}
+    {% elif not item.is_active %}
       <div class="badge badge-ghost gap-2">Paused</div>
-    {% elif monitor.is_online %}
+    {% elif item.is_online %}
       <div class="badge badge-success gap-2">
         <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> Healthy
       </div>
@@ -43,8 +43,8 @@
   <td class="text-sm">
     {% if is_checking %}
       <span class="italic opacity-50">Checking now...</span>
-    {% elif monitor.last_checked %}
-      {{ monitor.last_checked|timesince }} ago
+    {% elif item.last_checked %}
+      {{ item.last_checked|timesince }} ago
     {% else %}
       <span class="italic opacity-30">Never</span>
     {% endif %}
@@ -55,11 +55,11 @@
       
       <!-- CHECK NOW BUTTON (Hidden while checking to prevent double-clicks) -->
       {% if not is_checking %}
-      <button hx-post="{% url 'monitor_check' monitor.id %}" 
-              hx-indicator="#check-spinner-{{ monitor.id }}" 
+      <button hx-post="{% url 'check_endpoint' item.id %}" 
+              hx-indicator="#check-spinner-{{ item.id }}" 
               class="btn btn-ghost btn-xs tooltip" 
               data-tip="Check Now">
-        <span id="check-spinner-{{ monitor.id }}" class="htmx-indicator loading loading-spinner loading-xs text-primary"></span>
+        <span id="check-spinner-{{ item.id }}" class="htmx-indicator loading loading-spinner loading-xs text-primary"></span>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 htmx-dis-element" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
@@ -75,34 +75,34 @@
         </div>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40 border border-base-300">
           <li>
-            <a href="{% url 'monitor_logs' %}?monitor_id={{ monitor.id }}" hx-boos="true">View Logs</a>
+            <a href="{% url 'endpoint_logs' %}?endpoint_id={{ item.id }}" hx-boos="true">View Logs</a>
           </li>
           <li>
             <button type="button" 
-                    hx-get="{% url 'edit_api' monitor.id %}" 
-                    hx-target="#edit_monitor_modal_content" 
-                    onclick="edit_monitor_modal.showModal()">Edit</button>
+                    hx-get="{% url 'edit_endpoint' item.id %}" 
+                    hx-target="#edit_object_modal_content" 
+                    onclick="edit_object_modal.showModal()">Edit</button>
           </li>
           <li>
-            <button type="button" onclick="delete_modal_{{ monitor.id }}.showModal()" class="text-error">Delete</button>
+            <button type="button" onclick="delete_modal_{{ item.id }}.showModal()" class="text-error">Delete</button>
           </li>
         </ul>
       </div>
     </div>
 
     <!-- YOUR DELETE MODAL -->
-    <dialog id="delete_modal_{{ monitor.id }}" class="modal">
+    <dialog id="delete_modal_{{ item.id }}" class="modal">
       <div class="modal-box text-left">
-        <h3 class="font-bold text-lg text-error">Delete Monitor?</h3>
-        <p class="py-4">Are you sure you want to delete <strong>{{ monitor.name }}</strong>?</p>
+        <h3 class="font-bold text-lg text-error">Delete object?</h3>
+        <p class="py-4">Are you sure you want to delete <strong>{{ item.name }}</strong>?</p>
         <div class="modal-action">
           <button type="button" 
-                  hx-delete="{% url 'monitor_delete' monitor.id %}" 
-                  hx-target="#monitor-row-{{ monitor.id }}" 
-                  hx-swap="outerHTML" 
-                  onclick="delete_modal_{{ monitor.id }}.close()" 
+                  hx-delete="{% url 'delete_endpoint' item.id %}" 
+                  hx-target="#poll-container" 
+                  hx-swap="innerHTML" 
+                  onclick="delete_modal_{{ item.id }}.close()" 
                   class="btn btn-error">Confirm Delete</button>
-          <button type="button" onclick="delete_modal_{{ monitor.id }}.close()" class="btn btn-ghost">Cancel</button>
+          <button type="button" onclick="delete_modal_{{ item.id }}.close()" class="btn btn-ghost">Cancel</button>
         </div>
       </div>
       <form method="dialog" class="modal-backdrop"><button>close</button></form>
