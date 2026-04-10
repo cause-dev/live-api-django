@@ -1,0 +1,43 @@
+<!-- user/partials/auth_form.html -->
+
+<form hx-post="{% url url_name %}" hx-target="this" hx-swap="outerHTML" class="space-y-6">
+  {% csrf_token %}
+
+  <div class="{% if is_register %}
+      grid grid-cols-1 md:grid-cols-2 gap-4
+    {% else %}
+      space-y-4
+    {% endif %}">
+    {% for field in form %}
+      <div class="fieldset {% if is_register and field.name == 'username' or field.name == 'email' %}md:col-span-2{% endif %}">
+        <label class="fieldset-legend font-semibold text-base-content/70">
+          {{ field.label }}
+          {% if field.field.required %}
+            <span class="text-error">*</span>
+          {% endif %}
+        </label>
+
+        <div class="w-full">
+          <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" placeholder="{{ field.label }}" class="input input-bordered w-full focus:input-primary {% if field.errors %}input-error{% endif %}" value="{{ field.value|default_if_none:'' }}" required />
+
+          {% if is_register and field.help_text %}
+            <div class="text-[10px] opacity-50 mt-1 leading-tight">{{ field.help_text|safe }}</div>
+          {% endif %}
+
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <div class="text-error text-xs mt-1 font-medium italic">{{ error|striptags }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="form-control mt-4">
+    <button type="submit" class="btn btn-primary btn-block text-lg">
+      <span class="htmx-indicator loading loading-spinner"></span>
+      {{ btn_label }}
+    </button>
+  </div>
+</form>

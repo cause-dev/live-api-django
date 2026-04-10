@@ -37,6 +37,17 @@ class RegisterView(CreateView):
             return self.render_to_response(self.get_context_data(form=form))
         return super().form_invalid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "url_name": "register",
+                "btn_label": "Create Account",
+                "is_register": True,
+            }
+        )
+        return context
+
 
 class LoginView(DjangoLoginView):
     template_name = "user/login.html"
@@ -59,6 +70,17 @@ class LoginView(DjangoLoginView):
         if self.request.htmx:
             return self.render_to_response(self.get_context_data(form=form))
         return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "url_name": "login",
+                "btn_label": "Login",
+                "is_register": False,
+            }
+        )
+        return context
 
 
 class LogoutView(DjangoLogoutView):
