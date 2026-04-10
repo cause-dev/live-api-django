@@ -106,7 +106,7 @@ class AddEndpointView(LoginRequiredMixin, CreateView):
 class UpdateEndpointView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Endpoint
     form_class = EndpointForm
-    template_name = T["MONITORS"]["PARTIALS"]["ENDPOINTS"]["FORM"]
+    template_name = "monitors/endpoint/partials/form.html"
     success_url = reverse_lazy("dashboard")
 
     def test_func(self):
