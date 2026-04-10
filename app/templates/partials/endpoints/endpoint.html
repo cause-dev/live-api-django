@@ -75,13 +75,13 @@
         </div>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40 border border-base-300">
           <li>
-            <a href="{% url 'endpoint_logs' %}?endpoint_id={{ item.id }}" hx-boos="true">View Logs</a>
+            <a href="{% url 'endpoint_logs' %}?endpoint_id={{ item.id }}" hx-boost="true">View Logs</a>
           </li>
           <li>
             <button type="button" 
                     hx-get="{% url 'edit_endpoint' item.id %}" 
-                    hx-target="#edit_object_modal_content" 
-                    onclick="edit_object_modal.showModal()">Edit</button>
+                    hx-target="#endpoint_modal_content" 
+                    onclick="endpoint_modal.showModal()">Edit</button>
           </li>
           <li>
             <button type="button" onclick="delete_modal_{{ item.id }}.showModal()" class="text-error">Delete</button>

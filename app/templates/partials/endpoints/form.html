@@ -1,0 +1,43 @@
+{% if form.instance.pk %}
+  <!-- EDIT MODE -->
+  {% url 'edit_endpoint' form.instance.pk as action_url %}
+{% else %}
+  <!-- ADD MODE -->
+  {% url 'add_endpoint' as action_url %}
+{% endif %}
+
+<h3 class="font-bold text-lg mb-4">{{ label }}</h3>
+
+<form hx-post="{{ action_url }}" hx-target="#poll-container" hx-swap="innerHTML">
+  {% csrf_token %}
+  <div class="space-y-4">
+    <div>
+      <label class="label"><span class="label-text">Endpoint Name</span></label>
+      {{ form.name }}
+      {% if form.name.errors %}
+        <p class="text-error text-xs mt-1">{{ form.name.errors.0 }}</p>
+      {% endif %}
+    </div>
+    <div>
+      <label class="label"><span class="label-text">Target URL</span></label>
+      {{ form.url }}
+      {% if form.url.errors %}
+        <p class="text-error text-xs mt-1">{{ form.url.errors.0 }}</p>
+      {% endif %}
+    </div>
+    <div class="flex gap-4">
+      <div class="flex-1">
+        <label class="label"><span class="label-text">Expected Status</span></label>
+        {{ form.expected_status_code }}
+      </div>
+      <div class="flex flex-col items-center">
+        <label class="label"><span class="label-text">Active</span></label>
+        {{ form.is_active }}
+      </div>
+    </div>
+  </div>
+  <div class="modal-action">
+    <button type="submit" class="btn btn-primary">{{ label }}</button>
+    <button type="button" onclick="this.closest('dialog').close()" class="btn btn-ghost">Cancel</button>
+  </div>
+</form>

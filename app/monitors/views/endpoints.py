@@ -62,8 +62,13 @@ class EndpointView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 class AddEndpointView(LoginRequiredMixin, CreateView):
     model = Endpoint
     form_class = EndpointForm
-    template_name = T["MONITORS"]["PARTIALS"]["ADD_FORM"]
+    template_name = T["MONITORS"]["PARTIALS"]["ENDPOINTS"]["FORM"]
     success_url = reverse_lazy("dashboard")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["label"] = "Add New Endpoint"
+        return context
 
     def form_valid(self, form):
         # 1. Assign data
@@ -91,7 +96,7 @@ class AddEndpointView(LoginRequiredMixin, CreateView):
                 self.request, T["MONITORS"]["PARTIALS"]["HTMX_RESPONSE"], context
             )
 
-            return trigger_client_event(response, "endpointAdded", {})
+            return trigger_client_event(response, "modalClose", {})
 
         return super().form_valid(form)
 
@@ -105,12 +110,17 @@ class AddEndpointView(LoginRequiredMixin, CreateView):
 class UpdateEndpointView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Endpoint
     form_class = EndpointForm
-    template_name = "monitors/partials/edit_endpoint_form.html"
+    template_name = T["MONITORS"]["PARTIALS"]["ENDPOINTS"]["FORM"]
     success_url = reverse_lazy("dashboard")
 
     def test_func(self):
         """Security: Ensure only the owner can edit this endpoint."""
         return self.get_object().user == self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["label"] = "Update Endpoint"
+        return context
 
     def form_valid(self, form):
         # 1. Save the updated data
@@ -118,19 +128,21 @@ class UpdateEndpointView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
         # 2. HTMX Response
         if self.request.htmx:
+            messages.success(
+                self.request, f"Endpoint '{self.object.name}' updated successfully."
+            )
             # Use the shared helper for accurate stats
             context = get_endpoint_stats(self.request.user)
-            context["endpoint"] = self.object  # Pass the updated object
+            endpoints = Endpoint.objects.filter(user=self.request.user).order_by(
+                "-created_at"
+            )
+            context["endpoints"] = endpoints
 
             response = render(
-                self.request, "monitors/partials/update_monitor_response.html", context
+                self.request, T["MONITORS"]["PARTIALS"]["HTMX_RESPONSE"], context
             )
             # Trigger the client-side event to close the modal
-            return trigger_client_event(
-                response,
-                "monitorUpdated",
-                {"message": f"Monitor '{self.object.name}' updated."},
-            )
+            return trigger_client_event(response, "modalClose", {})
 
         return super().form_valid(form)
 
@@ -185,14 +197,12 @@ class MonitorAPIView(LoginRequiredMixin, UserPassesTestMixin, SingleObjectMixin,
         context["endpoint"] = endpoint
         context["is_checking"] = True
 
-        return render(
-            request, "monitors/partials/update_monitor_response.html", context
-        )
+        return render(request, T["MONITORS"]["PARTIALS"]["HTMX_RESPONSE"], context)
 
 
 class MonitorRowView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Endpoint
-    template_name = "monitors/partials/update_monitor_response.html"
+    template_name = T["MONITORS"]["PARTIALS"]["ENDPOINTS"]["ROW"]
     context_object_name = "endpoint"
 
     def test_func(self):

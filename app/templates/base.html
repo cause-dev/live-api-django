@@ -64,8 +64,9 @@
         event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
       })
       
-      document.body.addEventListener('endpointAdded', () => add_endpoint_modal.close())
-      document.body.addEventListener('endpointUpdated', () => edit_endpoint_modal.close())
+      document.body.addEventListener('modalClose', () => {
+        endpoint_modal.close()
+      })
       document.body.addEventListener('htmx:afterSwap', function () {
         window.scrollTo(0, 0)
       })

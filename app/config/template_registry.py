@@ -1,21 +1,22 @@
 # --- MONITORS APP ---
 M_DIR = "monitors"
 MONITORS = {
-    "DASHBOARD": f"{M_DIR}/dashboard.html",
-    "DETAILS": f"{M_DIR}/endpoint.html",
-    "LOGS": f"{M_DIR}/logs.html",
+    "DASHBOARD": "monitors/dashboard.html",
+    "DETAILS": "monitors/endpoint.html",
+    "LOGS": "monitors/logs.html",
     "PARTIALS": {
         "STATS": "partials/dashboard/stats.html",
         "HTMX_RESPONSE": "partials/dashboard/htmx-response.html",
         "ROW": f"{M_DIR}/partials/monitor_row.html",
         "LIST": f"{M_DIR}/partials/monitor_list.html",
         "CONTENT": f"{M_DIR}/partials/dashboard_content.html",
-        "ADD_FORM": f"{M_DIR}/partials/add_endpoint_form.html",
         "HEADER": "partials/dashboard/header.html",
         "POLL": "partials/dashboard/poll.html",
         "ENDPOINTS": {
             "LIST": "partials/endpoints/list.html",
             "ROW": "partials/endpoints/endpoint.html",
+            "FORM": "partials/endpoints/form.html",
+            "MODAL": "partials/endpoints/modal.html",
         },
     },
 }

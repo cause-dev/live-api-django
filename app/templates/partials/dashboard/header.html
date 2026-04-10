@@ -4,7 +4,7 @@
     <h1 class="text-3xl font-extrabold tracking-tight">System Overview</h1>
     <p class="text-base-content/60 text-sm">Real-time status of your monitored endpoints.</p>
   </div>
-  <button class="btn btn-primary shadow-lg" hx-get="{% url 'add_endpoint' %}" hx-target="#add_endpoint_modal_content" onclick="add_endpoint_modal.showModal()">
+  <button class="btn btn-primary shadow-lg" hx-get="{% url 'add_endpoint' %}" hx-target="#endpoint_modal_content" onclick="endpoint_modal.showModal()">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
     </svg>New Endpoint
