@@ -11,7 +11,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
-import os
+
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    SECURE_SSL_REDIRECT=(bool, True),
+)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", default="unsafe-secret-key-for-dev")
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", default=True)
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default=["*"])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -78,18 +85,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": os.environ.get(
-            "DATABASE_ENGINE", default="django.db.backends.sqlite3"
-        ),
-        "NAME": os.environ.get("DATABASE_NAME", default=BASE_DIR / "db.sqlite3"),
-        "USER": os.environ.get("DATABASE_USER", default=""),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD", default=""),
-        "HOST": os.environ.get("DATABASE_HOST", default=""),
-        "PORT": os.environ.get("DATABASE_PORT", default=""),
-    }
-}
+DATABASES = {"default": env.db("DATABASE_URL", "django.db.backends.sqlite3")}
 
 
 # Password validation
@@ -134,7 +130,7 @@ LOGIN_REDIRECT_URL = "/"
 
 LOGOUT_REDIRECT_URL = "/user/login/"
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"

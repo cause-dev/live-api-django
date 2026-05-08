@@ -37,16 +37,8 @@ services:
       dockerfile: "Containerfile.dev"
       args:
         - PYTHON_VERSION=python3.14-alpine
-    environment:
-      # Database configuration for Django
-      - DATABASE_ENGINE=django.db.backends.postgresql
-      - DATABASE_NAME=apivigil
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      # Celery configuration
-      - CELERY_BROKER_URL=redis://redis:6379/0
+    env_file:
+      - ./app/.env
     ports:
       - "8000:8000"
     volumes:
@@ -67,16 +59,8 @@ services:
       dockerfile: "Containerfile.dev"
       args:
         - PYTHON_VERSION=python3.14-alpine
-    environment:
-      # Database configuration for Django
-      - DATABASE_ENGINE=django.db.backends.postgresql
-      - DATABASE_NAME=apivigil
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      # Celery configuration
-      - CELERY_BROKER_URL=redis://redis:6379/0
+    env_file:
+      - ./app/.env
     volumes:
       - "./app:/app:z"
     command: "uv run celery -A config worker --loglevel=info"
@@ -94,16 +78,8 @@ services:
       dockerfile: "Containerfile.dev"
       args:
         - PYTHON_VERSION=python3.14-alpine
-    environment:
-      # Database configuration for Django
-      - DATABASE_ENGINE=django.db.backends.postgresql
-      - DATABASE_NAME=apivigil
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      # Celery configuration
-      - CELERY_BROKER_URL=redis://redis:6379/0
+    env_file:
+      - ./app/.env
     volumes:
       - "./app:/app:z"
     command: "uv run celery -A config beat --loglevel=info"
