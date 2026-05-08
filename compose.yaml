@@ -52,7 +52,7 @@ services:
     volumes:
       - "./app:/app:z"
       - vscode:/root/.vscode-server:Z
-    command: "uv run python manage.py runserver 0.0.0.0:8000"
+    command: ["bash", "./scripts/entrypoint.dev.sh"]
     depends_on:
       db:
         condition: service_healthy
