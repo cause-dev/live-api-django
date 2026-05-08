@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=python3.14-trixie
+ARG PYTHON_VERSION=python3.14-alpine
 
 FROM ghcr.io/astral-sh/uv:${PYTHON_VERSION}
 
@@ -6,7 +6,6 @@ FROM ghcr.io/astral-sh/uv:${PYTHON_VERSION}
      PYTHONDONTWRITEBYTECODE=1 \
      UV_COMPILE_BYTECODE=1 \
      UV_LINK_MODE=copy \
-     DJANGO_SETTINGS_MODULE=config.settings \
      XDG_CACHE_HOME=/app/.cache
      ENV PATH="/app/.venv/bin:$PATH"
 
@@ -15,9 +14,10 @@ WORKDIR /app
 COPY pyproject.toml uv.lock* ./
 
 RUN --mount=type=cache,target=/var/cache/apk \
-    --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=cache,target=/root/.cache/pip \
-    uv sync
+     --mount=type=cache,target=/root/.cache/uv \
+     --mount=type=cache,target=/root/.cache/pip \
+     apk add --no-cache git netcat-openbsd bash curl nodejs && \
+     uv sync --locked --no-install-project
 
 COPY . .
 
