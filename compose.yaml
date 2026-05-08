@@ -1,4 +1,4 @@
-name: "ApiVigil"
+name: "apivigil"
 services:
   db:
     container_name: "db"
