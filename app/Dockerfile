@@ -51,8 +51,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 EXPOSE ${PORT}
 
-ENTRYPOINT ["/sbin/tini", "--"]
-
 # Production server: Never use 'runserver' in production.
 # Use Gunicorn (WSGI) or Uvicorn/Granian (ASGI).
 CMD ["gunicorn", \
