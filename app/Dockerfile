@@ -12,19 +12,19 @@ ENV UV_COMPILE_BYTECODE=1 \
 WORKDIR /app
 
 # Install system build dependencies (only what's needed for 'uv sync')
-RUN --mount=type=cache,target=/var/cache/apk \
+RUN --mount=type=cache,id=apk-cache,target=/var/cache/apk \
     apk add --no-cache git gcc musl-dev python3-dev libffi-dev
 
 
 # Install dependencies first to leverage Docker layer caching
 # This layer only rebuilds if pyproject.toml or uv.lock changes
 COPY pyproject.toml uv.lock ./
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
     uv sync --group prod --frozen --no-install-project --no-dev
 
 # Copy application code and install the project
 COPY . .
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
     uv sync --group prod --frozen --no-dev
 
 # -- STAGE 2: Runner --
